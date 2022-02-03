@@ -2,9 +2,11 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-ValueKey<String> key = const ValueKey<String>('ok');
+const key = ValueKey<String>('ok');
+
+final easyThemeKey = GlobalKey<DynamicThemeState>();
+
 DynamicThemeState? state;
-GlobalKey<DynamicThemeState> easyThemeKey = GlobalKey<DynamicThemeState>();
 
 void main() {
   testWidgets('test finds state', (WidgetTester tester) async {
