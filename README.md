@@ -1,5 +1,7 @@
 # dynamic_theme
 
+[![Test workflow](https://github.com/TesteurManiak/dynamic_theme/actions/workflows/tests.yml/badge.svg)](https://github.com/TesteurManiak/dynamic_theme/actions/workflows/tests.yml)
+
 **This package is a fork of [dynamic_theme](https://github.com/Norbert515/dynamic_theme) by [Norbert515](https://github.com/Norbert515), I've already opened an issue and a PR to merge my changes but the maintainer seems to not be active anymore on this package.**
 
 ## Dynamically changing your theme without hassle
@@ -10,7 +12,7 @@ This packages manages changing your theme during runtime and persiting that them
 
 ## Include in your project
 
-```
+```yaml
 dependencies:
   dynamic_theme:
     git:
@@ -20,7 +22,7 @@ dependencies:
 
 run packages get and import it
 
-```
+```dart
 import 'package:dynamic_theme/dynamic_theme.dart';
 ```
 
