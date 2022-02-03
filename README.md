@@ -1,8 +1,10 @@
 # dynamic_theme
 
+**This package is a fork of [dynamic_theme](https://github.com/Norbert515/dynamic_theme) by [Norbert515](https://github.com/Norbert515), I've already opened an issue and a PR to merge my changes but the maintainer seems to not be active anymore on this package.**
+
 ## Dynamically changing your theme without hassle
 
-![](https://github.com/Norbert515/dynamic_theme/blob/master/assets/theme.png)
+![](https://github.com/TesteurManiak/dynamic_theme/blob/master/assets/theme.png)
 
 This packages manages changing your theme during runtime and persiting that theme.
 
@@ -10,7 +12,10 @@ This packages manages changing your theme during runtime and persiting that them
 
 ```
 dependencies:
-  dynamic_theme: ^2.0.0
+  dynamic_theme:
+    git:
+      url: https://github.com/TesteurManiak/dynamic_theme.git
+      ref: "<version>"
 ```
 
 run packages get and import it
@@ -89,10 +94,4 @@ When changing the theme mode with `setThemeMode` , it is additionally stored in 
 
 ### A dialog widget to change the theme mode !
 
-![](https://github.com/Norbert515/dynamic_theme/blob/master/assets/dialogs.png)
-
-## Getting Started
-
-For help getting started with Flutter, view our online [documentation](https://flutter.io/).
-
-For help on editing package code, view the [documentation](https://flutter.io/developing-packages/).
+![](https://github.com/TesteurManiak/dynamic_theme/blob/master/assets/dialogs.png)
