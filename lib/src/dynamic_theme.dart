@@ -61,14 +61,12 @@ class DynamicTheme extends StatefulWidget {
   DynamicThemeState createState() => DynamicThemeState();
 
   static DynamicThemeState of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<_DynamicThemeScope>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_DynamicTheme>();
     return scope!._state;
   }
 
   static DynamicThemeState? maybeOf(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<_DynamicThemeScope>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_DynamicTheme>();
     return scope?._state;
   }
 }
@@ -188,17 +186,17 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   @override
   Widget build(BuildContext context) {
-    return _DynamicThemeScope(
+    return _DynamicTheme(
       state: this,
       child: widget.themedWidgetBuilder(context, _themeMode, _themeData),
     );
   }
 }
 
-class _DynamicThemeScope extends InheritedWidget {
+class _DynamicTheme extends InheritedWidget {
   final DynamicThemeState _state;
 
-  const _DynamicThemeScope({
+  const _DynamicTheme({
     required super.child,
     required DynamicThemeState state,
   }) : _state = state;
@@ -206,5 +204,7 @@ class _DynamicThemeScope extends InheritedWidget {
   DynamicTheme get widget => _state.widget;
 
   @override
-  bool updateShouldNotify(_DynamicThemeScope oldWidget) => true;
+  bool updateShouldNotify(_DynamicTheme oldWidget) =>
+      _state._themeData != oldWidget._state._themeData ||
+      _state._themeMode != oldWidget._state._themeMode;
 }
