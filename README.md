@@ -2,7 +2,7 @@
 
 [![Test workflow](https://github.com/TesteurManiak/dynamic_theme/actions/workflows/tests.yml/badge.svg)](https://github.com/TesteurManiak/dynamic_theme/actions/workflows/tests.yml)
 
-**This package is a fork of [dynamic_theme](https://github.com/Norbert515/dynamic_theme) by [Norbert515](https://github.com/Norbert515), I've already opened an issue and a PR to merge my changes but the maintainer seems to not be active anymore on this package.**
+**This package is a fork of [dynamic_theme](https://github.com/Norbert515/dynamic_theme) by [Norbert515](https://github.com/Norbert515), I've already opened an issue and a [PR to merge my changes](https://github.com/Norbert515/dynamic_theme/pull/64) but the maintainer seems to not be active anymore on this package.**
 
 ## Dynamically changing your theme without hassle
 
