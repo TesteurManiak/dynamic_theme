@@ -1,5 +1,11 @@
 # CHANGE LOG
 
+## 2.1.0
+
+* Replaced `context.findAncestorStateOfType` with `context.dependOnInheritedWidgetOfExactType` in `DynamicTheme.of(context)`.
+* Added `DynamicTheme.maybeOf(context)` to return `null` if no `DynamicTheme` is found.
+* Updated dependencies.
+
 ## 2.0.0
 
 **BREAKING CHANGES**

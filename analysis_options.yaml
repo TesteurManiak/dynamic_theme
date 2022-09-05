@@ -5,12 +5,12 @@ analyzer:
     - lib/**.g.dart
     - test/**.mocks.dart
     - lib/generated_plugin_registrant.dart
-  strong-mode:
-    implicit-casts: false
+  language:
+    strict-casts: true
   errors:
     missing_required_param: error
-    missing_return: error
     unrelated_type_equality_checks: error
+    missing_return: warning
     close_sinks: warning
     cancel_subscriptions: warning
     parameter_assignments: warning
@@ -19,9 +19,10 @@ analyzer:
     unawaited_futures: warning
     unnecessary_await_in_return: warning
     unnecessary_null_aware_assignments: warning
+    use_decorated_box: warning
     use_string_buffers: warning
     avoid_unnecessary_containers: warning
-    # todo: ignore
+    use_if_null_to_convert_nulls_to_bools: warning
 
 linter:
   rules:
@@ -53,6 +54,7 @@ linter:
     - unnecessary_null_aware_assignments
     - unnecessary_parenthesis
     - unnecessary_raw_strings
+    - use_decorated_box
     - use_if_null_to_convert_nulls_to_bools
     - use_string_buffers
     - avoid_unnecessary_containers
