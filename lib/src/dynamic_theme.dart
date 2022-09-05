@@ -61,7 +61,15 @@ class DynamicTheme extends StatefulWidget {
   DynamicThemeState createState() => DynamicThemeState();
 
   static DynamicThemeState of(BuildContext context) {
-    return context.findAncestorStateOfType<DynamicThemeState>()!;
+    final scope =
+        context.dependOnInheritedWidgetOfExactType<_DynamicThemeScope>();
+    return scope!._state;
+  }
+
+  static DynamicThemeState? maybeOf(BuildContext context) {
+    final scope =
+        context.dependOnInheritedWidgetOfExactType<_DynamicThemeScope>();
+    return scope?._state;
   }
 }
 
@@ -131,9 +139,7 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   /// Changes the theme using the provided `ThemeData`
   void setThemeData(ThemeData data) {
-    setState(() {
-      _themeData = data;
-    });
+    setState(() => _themeData = data);
   }
 
   /// Toggles [ThemeMode.light] to [ThemeMode.dark] and vice versa.
@@ -182,6 +188,23 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.themedWidgetBuilder(context, _themeMode, _themeData);
+    return _DynamicThemeScope(
+      state: this,
+      child: widget.themedWidgetBuilder(context, _themeMode, _themeData),
+    );
   }
+}
+
+class _DynamicThemeScope extends InheritedWidget {
+  final DynamicThemeState _state;
+
+  const _DynamicThemeScope({
+    required super.child,
+    required DynamicThemeState state,
+  }) : _state = state;
+
+  DynamicTheme get widget => _state.widget;
+
+  @override
+  bool updateShouldNotify(_DynamicThemeScope oldWidget) => true;
 }
