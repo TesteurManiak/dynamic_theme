@@ -88,9 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return BrightnessSwitcherDialog(
-          onSelectedTheme: (ThemeMode mode) {
-            DynamicTheme.of(context).setThemeMode(mode);
-          },
+          onSelectedTheme: (mode) => DynamicTheme.setThemeMode(context, mode),
         );
       },
     );

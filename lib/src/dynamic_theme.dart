@@ -71,6 +71,9 @@ class DynamicTheme extends StatefulWidget {
   /// brightness.
   static FutureOr<void> toggleThemeMode(BuildContext context) =>
       DynamicTheme.maybeOf(context)?._toggleThemeMode();
+
+  static FutureOr<void> setThemeMode(BuildContext context, ThemeMode mode) =>
+      DynamicTheme.maybeOf(context)?._setThemeMode(mode);
 }
 
 class DynamicThemeState extends State<DynamicTheme> {
@@ -125,14 +128,14 @@ class DynamicThemeState extends State<DynamicTheme> {
   }
 
   /// Sets the new theme.
-  Future<void> setThemeMode(ThemeMode themeMode) async {
+  Future<void> _setThemeMode(ThemeMode themeMode) {
     // Update state with new values
     if (widget.onThemeModeChanged != null) {
       _themeData.value =
           widget.onThemeModeChanged!.call(themeMode, themeData.brightness);
     }
     _themeMode.value = themeMode;
-    await _saveThemeMode(themeMode);
+    return _saveThemeMode(themeMode);
   }
 
   Future<void> _toggleThemeMode() {
@@ -141,14 +144,14 @@ class DynamicThemeState extends State<DynamicTheme> {
         // If brightness is dark, set it to light
         // If it's not dark, set it to dark
         if (_fallbackBrightness == Brightness.dark) {
-          return setThemeMode(ThemeMode.light);
+          return _setThemeMode(ThemeMode.light);
         } else {
-          return setThemeMode(ThemeMode.dark);
+          return _setThemeMode(ThemeMode.dark);
         }
       case ThemeMode.light:
-        return setThemeMode(ThemeMode.dark);
+        return _setThemeMode(ThemeMode.dark);
       case ThemeMode.dark:
-        return setThemeMode(ThemeMode.light);
+        return _setThemeMode(ThemeMode.light);
     }
   }
 

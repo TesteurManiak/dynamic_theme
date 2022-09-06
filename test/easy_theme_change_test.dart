@@ -63,7 +63,8 @@ class ButtonPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        DynamicTheme.of(context).setThemeMode(
+        DynamicTheme.setThemeMode(
+          context,
           Theme.of(context).brightness == Brightness.dark
               ? ThemeMode.light
               : ThemeMode.dark,
