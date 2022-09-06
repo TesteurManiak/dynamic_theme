@@ -11,25 +11,6 @@ typedef ThemedWidgetBuilder = Widget Function(
 
 typedef ThemeDataWithThemeModeBuilder = ThemeData Function(ThemeMode);
 
-extension on ThemeMode {
-  String get string => toString().split('.').last;
-}
-
-extension on String {
-  ThemeMode toThemeMode() {
-    switch (this) {
-      case 'system':
-        return ThemeMode.system;
-      case 'light':
-        return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
-        throw Exception('Unknown theme mode: $this');
-    }
-  }
-}
-
 /// Creates a widget that applies a theme to a child widget. You can change the
 /// theme by calling `setThemeMode`.
 class DynamicTheme extends StatefulWidget {
@@ -94,15 +75,11 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   /// Loads the theme depending on the `loadThemeOnStart` value.
   Future<void> _loadThemeMode() async {
-    if (!_shouldLoadThemeMode) {
-      return;
-    }
+    if (!_shouldLoadThemeMode) return;
     final myThemeMode = await _getThemeMode();
     _themeMode = myThemeMode;
     _themeData = widget.data?.call(_themeMode);
-    if (mounted) {
-      setState(() {});
-    }
+    if (mounted) setState(() {});
   }
 
   /// Initializes the variables.
@@ -169,16 +146,14 @@ class DynamicThemeState extends State<DynamicTheme> {
   /// Saves the provided themeMode in [SharedPreferences].
   Future<void> _saveThemeMode(ThemeMode themeMode) async {
     //! Shouldn't save the themeMode if you don't want to load it
-    if (!_shouldLoadThemeMode) {
-      return;
-    }
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!_shouldLoadThemeMode) return;
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_sharedPreferencesKey, themeMode.string);
   }
 
   /// Returns a [ThemeMode] that gives you the latest brightness.
   Future<ThemeMode> _getThemeMode() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     // Gets the ThemeMode stored in prefs or returns the [defaultThemeMode].
     return prefs.getString(_sharedPreferencesKey)?.toThemeMode() ??
         widget.defaultThemeMode;
@@ -204,7 +179,24 @@ class _DynamicTheme extends InheritedWidget {
   DynamicTheme get widget => _state.widget;
 
   @override
-  bool updateShouldNotify(_DynamicTheme oldWidget) =>
-      _state._themeData != oldWidget._state._themeData ||
-      _state._themeMode != oldWidget._state._themeMode;
+  bool updateShouldNotify(_DynamicTheme oldWidget) => true;
+}
+
+extension on ThemeMode {
+  String get string => toString().split('.').last;
+}
+
+extension on String {
+  ThemeMode toThemeMode() {
+    switch (this) {
+      case 'system':
+        return ThemeMode.system;
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        throw Exception('Unknown theme mode: $this');
+    }
+  }
 }
