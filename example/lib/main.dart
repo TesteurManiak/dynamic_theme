@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: DynamicTheme.of(context).toggleThemeMode,
+              onPressed: () => DynamicTheme.toggleThemeMode(context),
               child: const Text('Toggle brightness'),
             ),
             const SizedBox(height: 16),
@@ -99,11 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void changeColor() {
     final currentTheme = Theme.of(context);
     final color = randomColor();
-    DynamicTheme.of(context).themeData = currentTheme.copyWith(
-      colorScheme: currentTheme.colorScheme.copyWith(
-        primary: color,
-        secondary: color,
-        tertiary: color,
+    DynamicTheme.setThemeData(
+      context,
+      currentTheme.copyWith(
+        colorScheme: currentTheme.colorScheme.copyWith(
+          primary: color,
+          secondary: color,
+          tertiary: color,
+        ),
       ),
     );
   }

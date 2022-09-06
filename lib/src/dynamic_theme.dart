@@ -23,7 +23,6 @@ class DynamicTheme extends StatefulWidget {
     required this.themedWidgetBuilder,
     this.onThemeModeChanged,
     this.defaultThemeMode = ThemeMode.system,
-    this.defaultThemeData,
     this.loadThemeOnStart = true,
   });
 
@@ -39,11 +38,6 @@ class DynamicTheme extends StatefulWidget {
   /// Defaults to `ThemeMode.system`.
   final ThemeMode defaultThemeMode;
 
-  /// The default theme used if [onThemeModeChanged] is null.
-  ///
-  /// Defaults to `ThemeData.fallback()`.
-  final ThemeData? defaultThemeData;
-
   /// Whether or not to load the theme on start.
   ///
   /// Defaults to `true`
@@ -52,15 +46,31 @@ class DynamicTheme extends StatefulWidget {
   @override
   DynamicThemeState createState() => DynamicThemeState();
 
+  /// Return the nearest instance of [DynamicThemeState] in the widget tree.
   static DynamicThemeState of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<_DynamicTheme>();
     return scope!._state;
   }
 
+  /// Return the nearest instance of [DynamicThemeState] in the widget tree.
+  ///
+  /// If no instance was found returns null.
   static DynamicThemeState? maybeOf(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<_DynamicTheme>();
     return scope?._state;
   }
+
+  /// Changes the theme using the provided [theme].
+  static void setThemeData(BuildContext context, ThemeData theme) =>
+      DynamicTheme.maybeOf(context)?._themeData.value = theme;
+
+  /// Toggles [ThemeMode.light] to [ThemeMode.dark] and vice versa.
+  ///
+  /// If the current theme is [ThemeMode.system], it will be set to
+  /// [ThemeMode.light] or [ThemeMode.dark] depending on the current system
+  /// brightness.
+  static FutureOr<void> toggleThemeMode(BuildContext context) =>
+      DynamicTheme.maybeOf(context)?._toggleThemeMode();
 }
 
 class DynamicThemeState extends State<DynamicTheme> {
@@ -72,7 +82,6 @@ class DynamicThemeState extends State<DynamicTheme> {
   late final _themeMode = ValueNotifier<ThemeMode>(widget.defaultThemeMode);
   late final _themeData = ValueNotifier<ThemeData>(
     widget.onThemeModeChanged?.call(themeMode, _fallbackBrightness) ??
-        widget.defaultThemeData ??
         _getThemeFromBrightness(_fallbackBrightness),
   );
 
@@ -81,9 +90,6 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   /// Get the current `ThemeData`
   ThemeData get themeData => _themeData.value;
-
-  /// Changes the theme using the provided `ThemeData`
-  set themeData(ThemeData data) => _themeData.value = data;
 
   @override
   void initState() {
@@ -129,12 +135,7 @@ class DynamicThemeState extends State<DynamicTheme> {
     await _saveThemeMode(themeMode);
   }
 
-  /// Toggles [ThemeMode.light] to [ThemeMode.dark] and vice versa.
-  ///
-  /// If the current theme is [ThemeMode.system], it will be set to
-  /// [ThemeMode.light] or [ThemeMode.dark] depending on the current system
-  /// brightness.
-  Future<void> toggleThemeMode() async {
+  Future<void> _toggleThemeMode() async {
     switch (_themeMode.value) {
       case ThemeMode.system:
         // If brightness is dark, set it to light
