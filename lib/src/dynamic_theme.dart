@@ -135,23 +135,20 @@ class DynamicThemeState extends State<DynamicTheme> {
     await _saveThemeMode(themeMode);
   }
 
-  Future<void> _toggleThemeMode() async {
+  Future<void> _toggleThemeMode() {
     switch (_themeMode.value) {
       case ThemeMode.system:
         // If brightness is dark, set it to light
         // If it's not dark, set it to dark
         if (_fallbackBrightness == Brightness.dark) {
-          await setThemeMode(ThemeMode.light);
+          return setThemeMode(ThemeMode.light);
         } else {
-          await setThemeMode(ThemeMode.dark);
+          return setThemeMode(ThemeMode.dark);
         }
-        break;
       case ThemeMode.light:
-        await setThemeMode(ThemeMode.dark);
-        break;
+        return setThemeMode(ThemeMode.dark);
       case ThemeMode.dark:
-        await setThemeMode(ThemeMode.light);
-        break;
+        return setThemeMode(ThemeMode.light);
     }
   }
 
