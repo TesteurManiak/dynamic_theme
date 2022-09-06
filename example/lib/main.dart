@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +13,15 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       defaultThemeMode: ThemeMode.light,
       loadThemeOnStart: true,
-      data: (mode) => ThemeData(
-        primarySwatch: Colors.indigo,
-        brightness: mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
-      ),
+      data: (mode) {
+        switch (mode) {
+          case ThemeMode.system:
+          case ThemeMode.light:
+            return ThemeData.light().copyWith(brightness: Brightness.light);
+          case ThemeMode.dark:
+            return ThemeData.dark().copyWith(brightness: Brightness.dark);
+        }
+      },
       themedWidgetBuilder: (
         BuildContext context,
         ThemeMode mode,
@@ -96,12 +103,26 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void changeColor() {
+    final currentTheme = Theme.of(context);
+    final color = randomColor();
     DynamicTheme.of(context).setThemeData(
-      ThemeData(
-        primaryColor: Theme.of(context).primaryColor == Colors.indigo
-            ? Colors.red
-            : Colors.indigo,
+      currentTheme.copyWith(
+        colorScheme: currentTheme.colorScheme.copyWith(
+          primary: color,
+          secondary: color,
+          tertiary: color,
+        ),
       ),
     );
   }
+}
+
+Color randomColor() {
+  final random = Random();
+  return Color.fromRGBO(
+    random.nextInt(256),
+    random.nextInt(256),
+    random.nextInt(256),
+    1.0,
+  );
 }
