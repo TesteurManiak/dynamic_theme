@@ -36,13 +36,10 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       key: easyThemeKey,
       defaultThemeMode: ThemeMode.dark,
-      data: (ThemeMode mode) {
-        return ThemeData(
-          primarySwatch: Colors.indigo,
-          brightness:
-              mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
-        );
-      },
+      onThemeModeChanged: (mode, _) => ThemeData(
+        primarySwatch: Colors.indigo,
+        brightness: mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
+      ),
       themedWidgetBuilder: (
         BuildContext context,
         ThemeMode mode,

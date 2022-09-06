@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:example/theme.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -11,28 +12,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DynamicTheme(
-      loadThemeOnStart: true,
-      data: (mode) {
-        switch (mode) {
+      onThemeModeChanged: (themeMode, fallbackBrightness) {
+        switch (themeMode) {
           case ThemeMode.system:
+            return AppTheme.fromBrightness(fallbackBrightness);
           case ThemeMode.light:
-            return ThemeData.light().copyWith(brightness: Brightness.light);
+            return AppTheme.light;
           case ThemeMode.dark:
-            return ThemeData.dark().copyWith(brightness: Brightness.dark);
+            return AppTheme.dark;
         }
       },
-      themedWidgetBuilder: (
-        BuildContext context,
-        ThemeMode mode,
-        ThemeData? data,
-      ) {
-        return MaterialApp(
-          themeMode: mode,
-          title: 'Flutter Demo',
-          theme: data,
-          home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        );
-      },
+      themedWidgetBuilder: (context, mode, data) => MaterialApp(
+        themeMode: mode,
+        title: 'Flutter Demo',
+        theme: data,
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      ),
     );
   }
 }
@@ -104,13 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void changeColor() {
     final currentTheme = Theme.of(context);
     final color = randomColor();
-    DynamicTheme.of(context).setThemeData(
-      currentTheme.copyWith(
-        colorScheme: currentTheme.colorScheme.copyWith(
-          primary: color,
-          secondary: color,
-          tertiary: color,
-        ),
+    DynamicTheme.of(context).themeData = currentTheme.copyWith(
+      colorScheme: currentTheme.colorScheme.copyWith(
+        primary: color,
+        secondary: color,
+        tertiary: color,
       ),
     );
   }

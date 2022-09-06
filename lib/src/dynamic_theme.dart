@@ -1,37 +1,48 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef ThemedWidgetBuilder = Widget Function(
-  BuildContext,
-  ThemeMode,
-  ThemeData?,
+  BuildContext context,
+  ThemeMode themeMode,
+  ThemeData? themeData,
 );
 
-typedef ThemeDataWithThemeModeBuilder = ThemeData Function(ThemeMode);
+typedef ThemeModeChangedCallback = ThemeData Function(
+  ThemeMode themeMode,
+  Brightness fallbackBrightness,
+);
 
 /// Creates a widget that applies a theme to a child widget. You can change the
 /// theme by calling `setThemeMode`.
 class DynamicTheme extends StatefulWidget {
   const DynamicTheme({
-    Key? key,
+    super.key,
     required this.themedWidgetBuilder,
-    this.data,
+    this.onThemeModeChanged,
     this.defaultThemeMode = ThemeMode.system,
+    this.defaultThemeData,
     this.loadThemeOnStart = true,
-  }) : super(key: key);
+  });
 
   /// Builder that gets called when the theme changes.
   final ThemedWidgetBuilder themedWidgetBuilder;
 
-  /// Callback that returns the latest [ThemeMode].
-  final ThemeDataWithThemeModeBuilder? data;
+  /// Method called each time the [ThemeMode] changes. You can use it to return
+  /// custom [ThemeData] depending of the [ThemeMode].
+  final ThemeModeChangedCallback? onThemeModeChanged;
 
-  /// The default theme on start
+  /// The default theme on start.
   ///
-  /// Defaults to `ThemeMode.system`
+  /// Defaults to `ThemeMode.system`.
   final ThemeMode defaultThemeMode;
+
+  /// The default theme used if [onThemeModeChanged] is null.
+  ///
+  /// Defaults to `ThemeData.fallback()`.
+  final ThemeData? defaultThemeData;
 
   /// Whether or not to load the theme on start.
   ///
@@ -53,68 +64,69 @@ class DynamicTheme extends StatefulWidget {
 }
 
 class DynamicThemeState extends State<DynamicTheme> {
-  ThemeMode _themeMode = ThemeMode.light;
-  bool _shouldLoadThemeMode = true;
-
-  ThemeData? _themeData;
-
   static const _sharedPreferencesKey = 'themeMode';
 
-  /// Get the current `ThemeData`
-  ThemeData get themeData => _themeData ?? Theme.of(context);
+  late final _fallbackBrightness =
+      SchedulerBinding.instance.window.platformBrightness;
+  late final _shouldLoadThemeMode = widget.loadThemeOnStart;
+  late final _themeMode = ValueNotifier<ThemeMode>(widget.defaultThemeMode);
+  late final _themeData = ValueNotifier<ThemeData>(
+    widget.onThemeModeChanged?.call(themeMode, _fallbackBrightness) ??
+        widget.defaultThemeData ??
+        _getThemeFromBrightness(_fallbackBrightness),
+  );
 
   /// Get the current `ThemeMode`.
-  ThemeMode get themeMode => _themeMode;
+  ThemeMode get themeMode => _themeMode.value;
+
+  /// Get the current `ThemeData`
+  ThemeData get themeData => _themeData.value;
+
+  /// Changes the theme using the provided `ThemeData`
+  set themeData(ThemeData data) => _themeData.value = data;
 
   @override
   void initState() {
     super.initState();
-    _initVariables();
     _loadThemeMode();
-  }
-
-  /// Loads the theme depending on the `loadThemeOnStart` value.
-  Future<void> _loadThemeMode() async {
-    if (!_shouldLoadThemeMode) return;
-    final myThemeMode = await _getThemeMode();
-    _themeMode = myThemeMode;
-    _themeData = widget.data?.call(_themeMode);
-    if (mounted) setState(() {});
-  }
-
-  /// Initializes the variables.
-  void _initVariables() {
-    _themeMode = widget.defaultThemeMode;
-    _themeData = widget.data?.call(themeMode);
-    _shouldLoadThemeMode = widget.loadThemeOnStart;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeData = widget.data?.call(_themeMode);
+    if (widget.onThemeModeChanged != null) {
+      _themeData.value =
+          widget.onThemeModeChanged!.call(themeMode, themeData.brightness);
+    }
   }
 
   @override
   void didUpdateWidget(DynamicTheme oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _themeData = widget.data?.call(_themeMode);
+    if (widget.onThemeModeChanged != null) {
+      _themeData.value = widget.onThemeModeChanged!.call(
+        themeMode,
+        themeData.brightness,
+      );
+    }
   }
 
-  /// Sets the new theme
-  /// Rebuilds the tree
+  @override
+  void dispose() {
+    _themeMode.dispose();
+    _themeData.dispose();
+    super.dispose();
+  }
+
+  /// Sets the new theme.
   Future<void> setThemeMode(ThemeMode themeMode) async {
     // Update state with new values
-    setState(() {
-      _themeData = widget.data?.call(themeMode);
-      _themeMode = themeMode;
-    });
+    if (widget.onThemeModeChanged != null) {
+      _themeData.value =
+          widget.onThemeModeChanged!.call(themeMode, themeData.brightness);
+    }
+    _themeMode.value = themeMode;
     await _saveThemeMode(themeMode);
-  }
-
-  /// Changes the theme using the provided `ThemeData`
-  void setThemeData(ThemeData data) {
-    setState(() => _themeData = data);
   }
 
   /// Toggles [ThemeMode.light] to [ThemeMode.dark] and vice versa.
@@ -123,11 +135,11 @@ class DynamicThemeState extends State<DynamicTheme> {
   /// [ThemeMode.light] or [ThemeMode.dark] depending on the current system
   /// brightness.
   Future<void> toggleThemeMode() async {
-    switch (_themeMode) {
+    switch (_themeMode.value) {
       case ThemeMode.system:
         // If brightness is dark, set it to light
         // If it's not dark, set it to dark
-        final b = Theme.of(context).brightness;
+        final b = MediaQuery.of(context).platformBrightness;
         if (b == Brightness.dark) {
           await setThemeMode(ThemeMode.light);
         } else {
@@ -161,10 +173,36 @@ class DynamicThemeState extends State<DynamicTheme> {
 
   @override
   Widget build(BuildContext context) {
-    return _DynamicTheme(
-      state: this,
-      child: widget.themedWidgetBuilder(context, _themeMode, _themeData),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeMode,
+      builder: (context, mode, _) => ValueListenableBuilder<ThemeData>(
+        valueListenable: _themeData,
+        builder: (context, theme, _) => _DynamicTheme(
+          state: this,
+          child: widget.themedWidgetBuilder(context, mode, theme),
+        ),
+      ),
     );
+  }
+
+  /// Loads the theme depending on the `loadThemeOnStart` value.
+  Future<void> _loadThemeMode() async {
+    if (!_shouldLoadThemeMode) return;
+    final myThemeMode = await _getThemeMode();
+    _themeMode.value = myThemeMode;
+    if (widget.onThemeModeChanged != null) {
+      _themeData.value =
+          widget.onThemeModeChanged!.call(themeMode, themeData.brightness);
+    }
+  }
+
+  ThemeData _getThemeFromBrightness(Brightness brightness) {
+    switch (brightness) {
+      case Brightness.light:
+        return ThemeData.light();
+      case Brightness.dark:
+        return ThemeData.dark();
+    }
   }
 }
 
