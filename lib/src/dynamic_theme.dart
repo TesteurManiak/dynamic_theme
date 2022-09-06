@@ -140,8 +140,7 @@ class DynamicThemeState extends State<DynamicTheme> {
       case ThemeMode.system:
         // If brightness is dark, set it to light
         // If it's not dark, set it to dark
-        final b = MediaQuery.of(context).platformBrightness;
-        if (b == Brightness.dark) {
+        if (_fallbackBrightness == Brightness.dark) {
           await setThemeMode(ThemeMode.light);
         } else {
           await setThemeMode(ThemeMode.dark);
