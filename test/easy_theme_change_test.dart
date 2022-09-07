@@ -36,13 +36,10 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       key: easyThemeKey,
       defaultThemeMode: ThemeMode.dark,
-      data: (ThemeMode mode) {
-        return ThemeData(
-          primarySwatch: Colors.indigo,
-          brightness:
-              mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
-        );
-      },
+      onThemeModeChanged: (mode, _) => ThemeData(
+        primarySwatch: Colors.indigo,
+        brightness: mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
+      ),
       themedWidgetBuilder: (
         BuildContext context,
         ThemeMode mode,
@@ -66,7 +63,8 @@ class ButtonPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        DynamicTheme.of(context).setThemeMode(
+        DynamicTheme.setThemeMode(
+          context,
           Theme.of(context).brightness == Brightness.dark
               ? ThemeMode.light
               : ThemeMode.dark,

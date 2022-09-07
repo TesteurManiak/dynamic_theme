@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:example/theme.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -9,24 +12,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DynamicTheme(
-      defaultThemeMode: ThemeMode.light,
-      loadThemeOnStart: true,
-      data: (mode) => ThemeData(
-        primarySwatch: Colors.indigo,
-        brightness: mode == ThemeMode.dark ? Brightness.dark : Brightness.light,
-      ),
-      themedWidgetBuilder: (
-        BuildContext context,
-        ThemeMode mode,
-        ThemeData? data,
-      ) {
-        return MaterialApp(
-          themeMode: mode,
-          title: 'Flutter Demo',
-          theme: data,
-          home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        );
+      onThemeModeChanged: (themeMode, fallbackBrightness) {
+        switch (themeMode) {
+          case ThemeMode.system:
+            return AppTheme.fromBrightness(fallbackBrightness);
+          case ThemeMode.light:
+            return AppTheme.light;
+          case ThemeMode.dark:
+            return AppTheme.dark;
+        }
       },
+      themedWidgetBuilder: (context, mode, data) => MaterialApp(
+        themeMode: mode,
+        title: 'Flutter Demo',
+        theme: data,
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      ),
     );
   }
 }
@@ -37,7 +38,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: DynamicTheme.of(context).toggleThemeMode,
+              onPressed: () => DynamicTheme.toggleThemeMode(context),
               child: const Text('Toggle brightness'),
             ),
             const SizedBox(height: 16),
@@ -87,21 +88,34 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return BrightnessSwitcherDialog(
-          onSelectedTheme: (ThemeMode mode) {
-            DynamicTheme.of(context).setThemeMode(mode);
-          },
+          onSelectedTheme: (mode) => DynamicTheme.setThemeMode(context, mode),
         );
       },
     );
   }
 
   void changeColor() {
-    DynamicTheme.of(context).setThemeData(
-      ThemeData(
-        primaryColor: Theme.of(context).primaryColor == Colors.indigo
-            ? Colors.red
-            : Colors.indigo,
+    final currentTheme = Theme.of(context);
+    final color = randomColor();
+    DynamicTheme.setThemeData(
+      context,
+      currentTheme.copyWith(
+        colorScheme: currentTheme.colorScheme.copyWith(
+          primary: color,
+          secondary: color,
+          tertiary: color,
+        ),
       ),
     );
   }
+}
+
+Color randomColor() {
+  final random = Random();
+  return Color.fromRGBO(
+    random.nextInt(256),
+    random.nextInt(256),
+    random.nextInt(256),
+    1.0,
+  );
 }
