@@ -64,10 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: showChooser,
-        child: const Icon(Icons.add),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -80,17 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );
-  }
-
-  void showChooser() {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return BrightnessSwitcherDialog(
-          onSelectedTheme: (mode) => DynamicTheme.setThemeMode(context, mode),
-        );
-      },
     );
   }
 

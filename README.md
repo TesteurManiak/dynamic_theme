@@ -91,9 +91,3 @@ void changeColor() {
 ```
 
 When changing the theme mode with `setThemeMode` , it is additionally stored in the shared preferences.
-
-## Also included
-
-### A dialog widget to change the theme mode !
-
-![](https://github.com/TesteurManiak/dynamic_theme/blob/master/assets/dialogs.png)
