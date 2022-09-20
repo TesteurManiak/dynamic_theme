@@ -31,11 +31,9 @@ class MyApp extends StatelessWidget {
       defaultThemeMode: ThemeMode.light,
       themedWidgetBuilder: (
         BuildContext context,
-        ThemeMode mode,
         ThemeData? theme,
       ) {
         return MaterialApp(
-          themeMode: mode,
           title: 'Flutter Demo',
           theme: ThemeData(
             primarySwatch: Colors.indigo,

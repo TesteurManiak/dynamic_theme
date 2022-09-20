@@ -6,8 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 typedef ThemedWidgetBuilder = Widget Function(
   BuildContext context,
-  ThemeMode themeMode,
-  ThemeData? themeData,
+  ThemeData themeData,
 );
 
 typedef ThemeModeChangedCallback = ThemeData Function(
@@ -183,7 +182,7 @@ class DynamicThemeState extends State<DynamicTheme> {
         valueListenable: _themeData,
         builder: (context, theme, _) => _DynamicTheme(
           state: this,
-          child: widget.themedWidgetBuilder(context, mode, theme),
+          child: widget.themedWidgetBuilder(context, theme),
         ),
       ),
     );

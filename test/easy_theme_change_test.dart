@@ -42,11 +42,9 @@ class MyApp extends StatelessWidget {
       ),
       themedWidgetBuilder: (
         BuildContext context,
-        ThemeMode mode,
         ThemeData? theme,
       ) {
         return MaterialApp(
-          themeMode: mode,
           title: 'Flutter Demo',
           theme: theme,
           home: const ButtonPage(),
