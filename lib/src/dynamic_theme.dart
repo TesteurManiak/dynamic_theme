@@ -94,6 +94,12 @@ class DynamicThemeState extends State<DynamicTheme> {
   /// Get the current `ThemeData`
   ThemeData get themeData => _themeData.value;
 
+  SharedPreferences? _prefs;
+  Future<SharedPreferences> get prefs async {
+    _prefs ??= await SharedPreferences.getInstance();
+    return _prefs!;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -159,15 +165,13 @@ class DynamicThemeState extends State<DynamicTheme> {
   Future<void> _saveThemeMode(ThemeMode themeMode) async {
     //! Shouldn't save the themeMode if you don't want to load it
     if (!_shouldLoadThemeMode) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_sharedPreferencesKey, themeMode.string);
+    await (await prefs).setString(_sharedPreferencesKey, themeMode.string);
   }
 
   /// Returns a [ThemeMode] that gives you the latest brightness.
   Future<ThemeMode> _getThemeMode() async {
-    final prefs = await SharedPreferences.getInstance();
     // Gets the ThemeMode stored in prefs or returns the [defaultThemeMode].
-    return prefs.getString(_sharedPreferencesKey)?.toThemeMode() ??
+    return (await prefs).getString(_sharedPreferencesKey)?.toThemeMode() ??
         widget.defaultThemeMode;
   }
 
