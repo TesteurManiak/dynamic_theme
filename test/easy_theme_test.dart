@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
         ThemeData? theme,
       ) {
         return MaterialApp(
-          themeMode: mode,
           title: 'Flutter Demo',
           theme: ThemeData(
             primarySwatch: Colors.indigo,
@@ -45,6 +44,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.indigo,
             brightness: Brightness.dark,
           ),
+          themeMode: mode,
           home: const ButtonPage(),
         );
       },
