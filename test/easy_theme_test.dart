@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       defaultThemeMode: ThemeMode.light,
       themedWidgetBuilder: (
         BuildContext context,
+        ThemeMode mode,
         ThemeData? theme,
       ) {
         return MaterialApp(
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.indigo,
             brightness: Brightness.dark,
           ),
+          themeMode: mode,
           home: const ButtonPage(),
         );
       },

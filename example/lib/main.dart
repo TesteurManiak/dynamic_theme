@@ -22,9 +22,10 @@ class MyApp extends StatelessWidget {
             return AppTheme.dark;
         }
       },
-      themedWidgetBuilder: (context, data) => MaterialApp(
+      themedWidgetBuilder: (context, mode, data) => MaterialApp(
         title: 'Flutter Demo',
         theme: data,
+        themeMode: mode,
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
